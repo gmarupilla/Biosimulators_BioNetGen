@@ -1,0 +1,22 @@
+name: Publish Docker image
+
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Docker login
+        env: 
+          GHCR_USERNAME: "${{ secrets.GHCR_USERNAME }}"
+          GHCR_TOKEN: "${{ secrets.GHCR_TOKEN }}"
+      - run: |
+          echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USERNAME --password-stdin
+      - name: Build latest image
+        run: |
+          docker build \
+              --tag biosimulators/bionetgen:2.5.0 \
+              --tag biosimulators/bionetgen:latest \
+          docker push ghcr.io/biosimulators/bionetgen:2.5.0
+          docker push ghcr.io/biosimulators/bionetgen:latest
